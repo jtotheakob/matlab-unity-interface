@@ -21,8 +21,8 @@ femurrot = roty(-90)*rotz(-90)*rotz(flex)*rotx(introt)*roty(-varval);
 
 %% add distance
 %calculate anterior-posterior and distal-proximal movement during flexion
-if flex>-180 translate = 0; 
-else translate = (360+flex)*0.011; 
+if flex>-180 translate = 0 
+else translate = (360+flex)*0.011 
 end
 
 %add translation movement to the translation matrix

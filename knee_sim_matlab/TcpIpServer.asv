@@ -1,6 +1,5 @@
-clear all
 clc
-
+clear all
 %% Variable declaration
 %rises each iteration of while loop to store data
 k = 1;
@@ -24,7 +23,7 @@ while(1)
     %flush input to only recieve newest pose data from network
     flushinput(tcpipServer);
     
-    %read data from network stream and store in datainput array
+    %read data from network stream and store in variables
     rawData = fread(tcpipServer,precision*14,'char');
     for i=1:precision 
         femurposx(i)= char(rawData(i));
@@ -58,7 +57,6 @@ while(1)
     datainput(k, 13) = str2double(tibiaquatb);
     datainput(k, 14) = str2double(tibiaquatc);
     
-    %create position and rotation matrizes and quaternions
     femurpos = [datainput(k, 1), datainput(k, 2), datainput(k, 3)];
     femurquat = [datainput(k, 4), datainput(k, 5), datainput(k, 6), datainput(k, 7)];
     tibiapos = [datainput(k, 8), datainput(k, 9), datainput(k, 10)];
@@ -66,22 +64,21 @@ while(1)
 
     %% calculation and simulation
     %call position calculation
-    [femurtrans, femurrot] = posecalc(femurpos, femurquat);
+    [femurtrans, femurrot] = posecalc(initpos, femurpos, initrot, femurquat);
     
     %call simulation
     simOut = sim('kneesim');
-    dataoutput(k, 1) = simOut.lcldefl(1);
-    dataoutput(k, 2) = simOut.mcldefl(1);
     
-    %call force calculation and save results to dataoutput array
-    [lclforce, mclforce] = forcecalc(dataoutput(k,1), dataoutput(k,2));
+    %call force calculation and save results to dataarray
+    [lclforce, mclforce] = forcecalc(simOut.lcldefl(1), simOut.mcldefl(1));
+    dataoutput(k, 1) = lclforce;
+    dataoutput(k, 2) = mclforce;
    
     %% send results pack to unity
+
     fwrite(tcpipServer,num2str(lclforce));
     fwrite(tcpipServer,num2str(mclforce));
-    
-    %increase k for next iteration
-    k = k+1;   
+    k = k+1; %rises each iteration of the loop    
 
 end
 

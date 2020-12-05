@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Net;
-using System.Net.Sockets;
 using System;
-using System.IO;
+using System.Net.Sockets;
 using System.Text;
 using System.Globalization;
 using System.Threading;
@@ -27,7 +24,6 @@ public class TcpIpClient : MonoBehaviour
     public static string mclforce;
     int i = 0;
 
-
     void Start()
     {
         //start client
@@ -44,7 +40,6 @@ public class TcpIpClient : MonoBehaviour
         mThread = new Thread(ts);
         mThread.Start();
         print("Thread started");
-
     }
 
     void Update()
@@ -60,13 +55,12 @@ public class TcpIpClient : MonoBehaviour
         if (timeLeft < 0)
         {
             SentSocket(MakeStringArray(pos1, rot1, precision)+MakeStringArray(pos2, rot2, precision));
-            //Debug.Log(MakeStringArray(pos1, rot1, precision) + MakeStringArray(pos2, rot2, precision));
             timeLeft = 0.1;
         }
     }
 
     //method for sending data
-    public void SentSocket(string package)
+    private void SentSocket(string package)
     {
         try
         {
@@ -81,7 +75,7 @@ public class TcpIpClient : MonoBehaviour
     }
 
     //create a dataarray as a string
-    public string MakeStringArray(Vector3 pos1, Quaternion rot1, int precision)
+    private string MakeStringArray(Vector3 pos1, Quaternion rot1, int precision)
     {
         string xpos = CreateString(pos1.x, precision);
         string ypos = CreateString(pos1.y, precision);
@@ -90,12 +84,12 @@ public class TcpIpClient : MonoBehaviour
         string xrot = CreateString(rot1.x, precision);
         string yrot = CreateString(rot1.y, precision);
         string zrot = CreateString(rot1.z, precision);
-        string dataarray = xpos + ypos + zpos + wrot + xrot + yrot + zrot;
-        return dataarray;
+        string datastring = xpos + ypos + zpos + wrot + xrot + yrot + zrot;
+        return datastring;
     }
 
     //create a string out of a double number with the right length
-    public string CreateString(double number, int length)
+    private string CreateString(double number, int length)
     {
         string output = null;
         int decimalPlaces;
@@ -131,7 +125,7 @@ public class TcpIpClient : MonoBehaviour
 
     //method for reading from the stream
     //called in separate thread
-    public void ReadSocket()
+    private void ReadSocket()
     {
         try
         {
@@ -141,11 +135,9 @@ public class TcpIpClient : MonoBehaviour
 
             while (mRunning)
             {
-                //Debug.Log("Listening for incoming traffic");
                 Int32 bytes = theStream.Read(data, 0, data.Length);
                 if (bytes > 0)
                 {
-                    //Debug.Log("Received: " + forces);
                     if (i == 0)
                     {
                         lclforce = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
@@ -158,7 +150,6 @@ public class TcpIpClient : MonoBehaviour
                         i = 0;
                         Debug.Log("mclforce: " + mclforce);
                     }
-                    
                 }
             }
         }
@@ -171,8 +162,6 @@ public class TcpIpClient : MonoBehaviour
             mRunning = false;
             Debug.Log("Thread stopped");
         }
-
-
     }
     private void OnApplicationQuit()
     {
