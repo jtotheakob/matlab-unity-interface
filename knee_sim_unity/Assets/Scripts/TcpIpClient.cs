@@ -30,7 +30,7 @@ public class TcpIpClient : MonoBehaviour
         socket = new TcpClient(Host, Port);
         theStream = socket.GetStream();
         socketReady = true;
-        Debug.Log("socket is set up");
+        Debug.Log("sockets connected");
 
         //start thread
         lclforce = "0";
@@ -39,7 +39,7 @@ public class TcpIpClient : MonoBehaviour
         ThreadStart ts = new ThreadStart(ReadSocket);
         mThread = new Thread(ts);
         mThread.Start();
-        print("Thread started");
+        print("thread started");
     }
 
     void Update()
@@ -131,7 +131,7 @@ public class TcpIpClient : MonoBehaviour
         {
             // Buffer to store the response bytes.
             Byte[] data = new Byte[1024];
-            Debug.Log("TCP-Client started");
+            Debug.Log("listening for incoming data");
 
             while (mRunning)
             {
@@ -142,13 +142,11 @@ public class TcpIpClient : MonoBehaviour
                     {
                         lclforce = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
                         i = 1;
-                        Debug.Log("lclforce: " + lclforce);
                     }
                     else
                     {
                         mclforce = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
                         i = 0;
-                        Debug.Log("mclforce: " + mclforce);
                     }
                 }
             }
@@ -160,7 +158,7 @@ public class TcpIpClient : MonoBehaviour
         finally
         {
             mRunning = false;
-            Debug.Log("Thread stopped");
+            Debug.Log("thread stopped");
         }
     }
     private void OnApplicationQuit()

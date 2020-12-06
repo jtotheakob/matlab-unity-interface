@@ -1,87 +1,71 @@
 clear all
 clc
 
-%% Variable declaration
-%rises each iteration of while loop to store data
-k = 1;
-
+%% Declaring of variables
 %match precision with unity script "TcpIpClient.cs"
-%defines the size of the values recieved over the network
+%defines the length of the sub-sequences of the byte sequence received over the network
 precision = 6;
 
-%% Set-up Server
-%match ip-adress and port with unity script "TcpIpClient.cs"
-%setting up a local server 
+%% Setting up a local TCP/IP server
+%
+%This script functions as a local TCP/IP server. For that, the IP adress 
+%and the port number have to be declared in a first step. In this case the 
+%IP adress: '127.0.0.1' and the port number 55000 were randomly chosen. The
+%values have to be matched with the "TcpIpClient.cs" script. Next, the networkstream 
+%is opened in order to wait for a connection with a client. In case of a successful 
+%server set-up and connection, the user is informed via the console.
+
 tcpipServer = tcpip('127.0.0.1',55000,'NetworkRole','Server');
-data = membrane(1);
-fprintf('Server Set-up');
 fopen(tcpipServer);
+fprintf('server set-up and connection successful');
 
 %% Start Server Loop
 
 while(1)  
-    %% recieve position data and write to datainput
-    %flush input to only recieve newest pose data from network
+    %% Receiving position data
+    %
+    %First, the input stream is flushed in order to delete unread data packages that 
+    %queued up in the stream. Subsequently, the newest data package is read 
+    %into the variable RAWDATA. The length of the input sequence is defined by 
+    %the PRECISION of each value multiplied by the total number of values that 
+    %are demanded. In total this number is 14, since there are three position 
+    %values per target (i.e., x-, y- and z-position) and four rotation values 
+    %(quaterion). Finally, the vectors and quaterions are reassembled with the 
+    %CONVERTDATA function; i.e., femur position vector (FEMURPOS), femur rotation
+    %quaternion (FEMURQUAT), tibia position vector (TIBIAPOSE) and tibia rotation
+    %quaternion(TIBIAQUAT).
+    %
+    %flush input to delete data queue
     flushinput(tcpipServer);
     
-    %read data from network stream and store in datainput array
+    %read data from network stream
     rawData = fread(tcpipServer,precision*14,'char');
-    for i=1:precision 
-        femurposx(i)= char(rawData(i));
-        femurposy(i+precision)= char(rawData(i+precision));
-        femurposz(i+precision*2)= char(rawData(i+precision*2));
-        femurquatw(i+precision*3)= char(rawData(i+precision*3));
-        femurquata(i+precision*4)= char(rawData(i+precision*4));
-        femurquatb(i+precision*5)= char(rawData(i+precision*5));
-        femurquatc(i+precision*6)= char(rawData(i+precision*6));
-        tibiaposx(i+precision*7)= char(rawData(i+precision*7));
-        tibiaposy(i+precision*8)= char(rawData(i+precision*8));
-        tibiaposz(i+precision*9)= char(rawData(i+precision*9));
-        tibiaquatw(i+precision*10)= char(rawData(i+precision*10));
-        tibiaquata(i+precision*11)= char(rawData(i+precision*11));
-        tibiaquatb(i+precision*12)= char(rawData(i+precision*12));
-        tibiaquatc(i+precision*13)= char(rawData(i+precision*13));
-    end
     
-    datainput(k, 1) = str2double(femurposx);
-    datainput(k, 2) = str2double(femurposy);
-    datainput(k, 3) = str2double(femurposz);
-    datainput(k, 4) = str2double(femurquatw);
-    datainput(k, 5) = str2double(femurquata);
-    datainput(k, 6) = str2double(femurquatb);
-    datainput(k, 7) = str2double(femurquatc);
-    datainput(k, 8) = str2double(tibiaposx);
-    datainput(k, 9) = str2double(tibiaposy);
-    datainput(k, 10) = str2double(tibiaposz);
-    datainput(k, 11) = str2double(tibiaquatw);
-    datainput(k, 12) = str2double(tibiaquata);
-    datainput(k, 13) = str2double(tibiaquatb);
-    datainput(k, 14) = str2double(tibiaquatc);
-    
-    %create position and rotation matrizes and quaternions
-    femurpos = [datainput(k, 1), datainput(k, 2), datainput(k, 3)];
-    femurquat = [datainput(k, 4), datainput(k, 5), datainput(k, 6), datainput(k, 7)];
-    tibiapos = [datainput(k, 8), datainput(k, 9), datainput(k, 10)];
-    tibiaquat = [datainput(k, 11), datainput(k, 12), datainput(k, 13), datainput(k, 14)];
+    %convert received data to vectors and quaternions
+    [femurpos,femurquat,tibiapos,tibiaquat] = ConvertData(rawData,precision);
 
-    %% calculation and simulation
-    %call position calculation
-    [femurtrans, femurrot] = posecalc(femurpos, femurquat);
+    %% Calculating pose, run simulation and calculate force
+    %
+    %Prior to calling the simulation, the pose of the femur in the simulation 
+    %has to be calculated. The function POSECALC takes the femur position vector
+    %and the femur rotation quaternion and returns a translation vector and a 
+    %rotation matrix that are accessed in the rigid transform block ground-femur.
+    %The SimuLink model KNEESIM is called and the output is stored to the workspace. 
+    %The function FORCECALC takes the very output as an input to calculate 
+    %the lateral and medial collateral ligament force.
+    %
+    %call pose calculation
+    [femurtrans,femurrot] = PoseCalc(femurpos,femurquat);
     
     %call simulation
     simOut = sim('kneesim');
-    dataoutput(k, 1) = simOut.lcldefl(1);
-    dataoutput(k, 2) = simOut.mcldefl(1);
     
-    %call force calculation and save results to dataoutput array
-    [lclforce, mclforce] = forcecalc(dataoutput(k,1), dataoutput(k,2));
+    %calculate ligament forces
+    [lclforce,mclforce] = ForceCalc(simOut.lcldefl(1),simOut.mcldefl(1));
    
-    %% send results pack to unity
+    %% Send results back to unity
     fwrite(tcpipServer,num2str(lclforce));
     fwrite(tcpipServer,num2str(mclforce));
-    
-    %increase k for next iteration
-    k = k+1;   
 
 end
 
