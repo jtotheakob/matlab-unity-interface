@@ -21,18 +21,16 @@ quat90flex = [0.573500000000000,0.447900000000000,-0.414000000000000,-0.54700000
 %a0original = rad2deg(rotm2eul(quat2rotm(quat0flex)))
 %a45original = rad2deg(rotm2eul(quat2rotm(quat45flex)))
 %a90original = rad2deg(rotm2eul(quat2rotm(quat90flex)))
-
-lcl = abs(dataoutput(:,1));
-mcl = abs(dataoutput(:,2));
-
-%max defl lcl 0.0642
-maxlcl = max(lcl)
-%max defl mcl 0.0891
-maxmcl = max(mcl)
-
-%min defl lcl 0.0408
-minlcl = min(lcl)
-%min defl mcl 0.0484
-minmcl = min(mcl)
-
-[lclforce, mclforce] = forcecalc(maxlcl, maxmcl)
+initpos = [0, -0.025, 0.425];
+initrot = [180, 0, 90];
+femurangles = [220, 5, 93];
+flex = femurangles(1)-initrot(1);
+varval = femurangles(3)-initrot(3);
+femurrot = roty(-90)*rotz(-90)*rotz(flex)*rotx(femurangles(2))*roty(-varval);
+if flex>-180 
+    translate = 0; 
+else
+    translate = (360+flex)*0.011;
+end
+femurtrans = initpos + [0, -0.01, 0.03]*translate;
+sim('kneesim');
