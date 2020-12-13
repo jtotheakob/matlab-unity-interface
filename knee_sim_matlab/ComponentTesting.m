@@ -1,20 +1,21 @@
 %Component Tesing script for the CONVERT DATA function
 %
-%In this component testing szenario, the CONVERTDATA function is tested.
-%First two edge case test vectors and quaternions each are declared.
-%Subsequently, the individual components are converted first to strings and
-%then two bytes. The array of bytes called DATA represents a data package
-%that Matlab received from the client. In order to test the CONVERTDATA
-%function, the data package is given as an input to the function and the
-%results are compared with the initial declaration of the vectors and
-%quaternions. If all of them are alike the test will return "Test succeded!".
+%In this component testing scenario, the CONVERTDATA function is tested.
+%For every case two test vectors, two quaternions and the precision value
+%are declared. Subsequently, the individual components are converted 
+%first to strings and then to bytes. The array of bytes called DATA 
+%represents a data package that Matlab received from the client. In order
+%to test the CONVERTDATA function, the data package is given as an input 
+%to the function and the results are compared with the initial 
+%declaration of the vectors and quaternions. If all of them are alike the
+%test will return "Test succeeded!".
 clc
 clear all
 n = input('Enter a number: ');
 
 %edge case definition
 switch n
-    case 1 %eigenvector and quaternion with 0 rotation
+    case 1 %directional vector and quaternion with 0° rotation
         quaternion1 = [1,0,0,0];
         vector1 = [1,0,0];
         quaternion2 = [1,0,0,0];
@@ -26,7 +27,7 @@ switch n
         quaternion2 = [0,0,0,0];
         vector2 = [0,0,0];
         precision = 1;
-    case 3 %random values
+    case 3 %random values that most closely represent reality
         quaternion1 = [0.0011,0.0012,0.0013,0.0014];
         vector1 = [0.0021,0.0022,0.0023];
         quaternion2 = [0.0031,0.0032,0.0033,0.0034];
@@ -55,7 +56,7 @@ data(precision*13+1:precision*14) = unicode2native(num2str(quaternion2(4)));
 
 %test if the results match the initial data
 if (isequal(testvector1,vector1) & isequal(testvector2,vector2) & isequal(testquaternion1,quaternion1) &  isequal(testquaternion2,quaternion2))
-    fprintf("Test succeded!\n");
+    fprintf("Test succeeded!\n");
 else
      fprintf("Test failed!\n");
 end

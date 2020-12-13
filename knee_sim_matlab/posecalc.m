@@ -1,17 +1,19 @@
 function [femurtrans,femurrot] = PoseCalc(~, femurquat)
-%PoseCalc takes FEMURPOS and FEMURQUAT as an input and returns a translation 
-%vector FEMURTRANS and a rotation matrix FEMURROT
+%PoseCalc takes FEMURPOS and FEMURQUAT as an input and returns a 
+%translation vector FEMURTRANS and a rotation matrix FEMURROT
 %
-%First, the initial rotation of the knee joint INITROT is set to full extension
-%or 0° of flexion with 0° of varus/valgus rotation and also 0° of internal/external
-%rotation. The initial pose INITPOS is set to create a slight extension gap. 
-%Second, the quaternion FEMURQUAT is converted to a vector FEMURANGLES containing 
-%the euler angles, with the flexion/extension rotation stored in the x-coordinate,
-%the internal/external rotation in the y-coordinate and the varus/valgus rotation
-%in the z-coordinate. Subsequently, the initial rotation and the current rotation 
-%are combined and the rotation matrix FEMURROT is calculated. Finally, the 
-%anterior-posterior and the distal-proximal movement of the femur during flexion
-%is calculated and the translation vector FEMURTRANS created. 
+%First, the initial rotation of the knee joint INITROT is set to full 
+%extension or 0° of flexion with 0° of varus/valgus rotation and also 0° 
+%of internal/external rotation. The initial pose INITPOS is set to create
+%a slight extension gap. Second, the quaternion FEMURQUAT is converted to
+%a vector FEMURANGLES containing the euler angles, with the flexion/
+%extension rotation stored in the x-coordinate, the internal/external 
+%rotation in the y-coordinate and the varus/valgus rotation in the 
+%z-coordinate. Subsequently, the initial rotation and the current 
+%rotation are combined and the rotation matrix FEMURROT is calculated. 
+%Finally, the anterior-posterior and the distal-proximal movement of the 
+%femur during flexion is calculated and the translation vector FEMURTRANS
+%created. 
 %
 %% Initialize variables and values
 initpos = [0, -0.02, 0.425];

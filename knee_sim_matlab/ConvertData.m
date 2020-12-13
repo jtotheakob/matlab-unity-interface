@@ -1,11 +1,13 @@
 function [femurpos,femurquat,tibiapos,tibiaquat] = ConvertData(rawData,precision)
-%RAWDATA is converted from a sequence of bytes to two vectors and two quaternions.
+%RAWDATA is converted from a sequence of bytes to two vectors and 
+%quaternions
 %
-%The input RAWDATA is a sequence of bytes. First the sequence has to be split 
-%into parts of equal length. The length of each sub-sequence is fixed and defined 
-%by the variable PRECISION. Each byte of the sub-sequence is converted into 
-%a character and stored as a string. Finally, the string is converted to a double 
-%value and used for the assembly of the adequate position vector or rotation quaternion
+%The input RAWDATA is a sequence of bytes. First the sequence has to be 
+%split into parts of equal length. The length of each sub-sequence is 
+%fixed and defined by the variable PRECISION. Each byte of the sub-
+%sequence is converted into a character and stored as a string. Finally, 
+%the string is converted to a double value and used for the assembly of 
+%the adequate position vector or rotation quaternion
 
     for i=1:precision 
             femurposx(i)= char(rawData(i));
