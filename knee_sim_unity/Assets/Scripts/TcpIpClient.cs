@@ -90,7 +90,7 @@ public class TcpIpClient : MonoBehaviour
         }
     }
 
-    private string PackageData(Vector3 pos1, Quaternion rot1, int precision)
+    public static string PackageData(Vector3 pos1, Quaternion rot1, int precision)
     {
         /* function for converting a vector and a quaternion to a single datastring
         * 
@@ -110,20 +110,20 @@ public class TcpIpClient : MonoBehaviour
         return datastring;
     }
 
-    private string CreateString(double number, int length)
+    public static string CreateString(double number, int length)
     {
         /*function for creating a string with a predefined size
         *
         *Since the server is expecting a fixed number of bytes, each individual string has to have the 
-        *same length. The length is defined by the length variable that is matched with the correspondent 
-        *variable in the server script. It has to be made sure, that the precision value is large enough,
-        *to ensure that the largest possible number still has got at least one decimal place. First the value's 
-        *sign is checked. In case the value is negative, the number of decimal places is defined by the 
-        *overall length reduced by three places, because every decimal contains at least "-0.". If it the 
-        *value is positive, the length is only reduced by two places, because the negative sign is omitted. 
-        *In a while loop the number of decimal places is further reduced, until the string has exactly the
-        *right size. 
-        *Exception 1: If the value originally does not contain any decimal places, they have to be added.
+        *same length. The length is defined by the length variable that is matched with the correspondent precision
+        *variable in the server script. It has to be made sure that the precision value is always greater than 1.
+        *First the value's sign is checked. In case the value is negative and the length is greater than 2, the number
+        *of decimal places is defined by the overall length reduced by three places, because every decimal 
+        *contains at least "-0.". If the value is positive, the length is only reduced by two places, because 
+        *the negative sign is omitted. In a while loop the number of decimal places is further reduced, until 
+        *the string has exactly the right length. 
+        *Exception 1: If the value originally does not contain any decimal places and the maximum number of
+        *places is not reached, a comma point is added.
         *Exception 2: If the length is too short, zeros are added to the end of the string until the length of 
         *the string is satisfied.
         */
@@ -131,7 +131,7 @@ public class TcpIpClient : MonoBehaviour
         int decimalPlaces;
 
         //checking the value's sign
-        if (number < 0)
+        if (number < 0 && length > 2)
         {
             decimalPlaces = length - 3;
         }
@@ -150,7 +150,7 @@ public class TcpIpClient : MonoBehaviour
         }
 
         //exception 1: output does not contain a point
-        if (!output.Contains("."))
+        if (output.Length < length && !output.Contains("."))
         {
             output += '.';
         }

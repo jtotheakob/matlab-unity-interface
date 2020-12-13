@@ -10,7 +10,7 @@ function [lclforce, mclforce] = ForceCalc(lcldefl, mcldefl)
 k = 1;
 
 %calculate spring force
-lclforce = (abs(lcldefl)-0.050)*k;
-mclforce = (abs(mcldefl)-0.055)*k;
+lclforce = round((abs(lcldefl)-0.050)*k, 4);
+mclforce = round((abs(mcldefl)-0.055)*k, 4);
 
 end
