@@ -4,18 +4,18 @@ clc
 %% Declaring of variables
 %match precision with unity script "Client.cs"
 %defines the length of the sub-sequences of the byte sequence received 
-%over the network
+%over TCP
 precision = 6;
 
 %% Setting up a local TCP/IP server
 %
 %This script functions as a local TCP server. For that, the IP adress 
-%and the port number have to be declared in a first step. In this case
-%the IP adress: '127.0.0.1' and the port number 55000 were randomly
-%chosen. The values have to be matched with the "Client.cs" script. 
-%Next, the networkstream is opened in order to wait for a connection with
-%a client. In case of a successful server set-up and connection, the user
-%is informed via the console.
+%and the port number have to be declared in a first step. The loopback IP
+%address '127.0.0.1' and the port '55000' were chosen to allow for a 
+%connection without any associated hardware. The values have to be 
+%matched with the "Client.cs" script. Next, the networkstream is opened 
+%in order to wait for a connection with a client. In case of a successful
+%server set-up and connection, the user is informed via the console.
 
 tcpServer = tcpip('127.0.0.1',55000,'NetworkRole','Server');
 fopen(tcpServer);

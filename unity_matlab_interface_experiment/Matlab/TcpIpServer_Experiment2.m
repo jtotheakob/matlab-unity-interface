@@ -8,8 +8,8 @@ k =1;
 
 %% Setting up a local TCP/IP server
 
-tcpipServer = tcpip('127.0.0.1',55000,'NetworkRole','Server');
-fopen(tcpipServer);
+tcpipServer = tcp('127.0.0.1',55000,'NetworkRole','Server');
+fopen(tcpServer);
 fprintf('server set-up and connection successful');
 
 %% Start Server Loop
@@ -19,23 +19,22 @@ while(1)
     %flush input to delete data queue
     flushinput(tcpipServer);
     
-    %read data from network stream    
-    rawData = fread(tcpipServer,14*precision,'char');
+    %read all 6 coordinates received from Unity    
+    rawData = fread(tcpServer,6,'char');
     
-    %convert received data to numbers
-    [pos1, rot1, pos2, rot2] = ConvertData(rawData, precision);
+    %convert coordinates to two vectors
+    [pos1, pos2] = ConvertData(rawData);
 
     %% Experiment 2
-    %the target distance vector is sent back to Unity
-    targetdistance = pos1 - pos2;
+    %calculate distance vector
+    distance = pos1 - pos2;
     
    
     %% Send results back to unity
-    fwrite(tcpipServer,num2str(round(targetdistance(1),2)));
-    pause(0.01);
-    fwrite(tcpipServer,num2str(round(targetdistance(2),2)));
-    pause(0.01);
-    fwrite(tcpipServer,num2str(round(targetdistance(3),2)));
+    %send all three distance values to Unity
+    fwrite(tcpServer,num2str(distance(1)));
+    fwrite(tcpServer,num2str(distance(2)));
+    fwrite(tcpServer,num2str(distance(3)));
     pause(0.01);
 
 end

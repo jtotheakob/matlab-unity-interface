@@ -8,8 +8,8 @@ k =1;
 
 %% Setting up a local TCP/IP server
 
-tcpipServer = tcpip('127.0.0.1',55000,'NetworkRole','Server');
-fopen(tcpipServer);
+tcpServer = tcpip('127.0.0.1',55000,'NetworkRole','Server');
+fopen(tcpServer);
 fprintf('server set-up and connection successful');
 
 %% Start Server Loop
@@ -19,22 +19,25 @@ while(1)
     %flush input to delete data queue
     flushinput(tcpipServer);
     
-    %read data from network stream    
-    rawData = fread(tcpipServer,5,'char');
+    %read all 5 target values received from Unity    
+    rawData = fread(tcpServer,5,'char');
     
-    %convert received data to numbers
+    %convert all 5 received values to numbers
     target1 = str2double(char(rawData(1)));
     target2 = str2double(char(rawData(2)));
+    %[...]
+        
+
     target3 = str2double(char(rawData(3)));
     target4 = str2double(char(rawData(4)));
     target5 = str2double(char(rawData(5)));
 
     %% Experiment 1
-    %the experimentresult is sent back to Unity
-    experimentresult = (target1 - target2) + target3*target4 - target5;
+    %result is send back to Unity
+    result = (target1 - target2)*target3 + target4 - target5;
    
-    %% Send results back to unity
-    fwrite(tcpipServer,num2str(experimentresult));
+    %send results back to Unity
+    fwrite(tcpServer,num2str(result));
 
 end
 

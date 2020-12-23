@@ -27,7 +27,7 @@ public class TargetPosition : MonoBehaviour
         rotq4 = Target4.transform.rotation;
         rotq5 = Target5.transform.rotation;
         
-        //whenever a target is tracked, the value sent to Matlab changes
+        //whenever a target is tracked, the value send to Matlab changes
         if (IsTrackingMarker("Target1")) {target1 = 1;} else {target1 = 0;}
         if (IsTrackingMarker("Target2")) {target2 = 2;} else {target2 = 0;}
         if (IsTrackingMarker("Target3")) {target3 = 3;} else {target3 = 0;}

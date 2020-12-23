@@ -42,7 +42,7 @@ public class TcpIpClientExp1 : MonoBehaviour
         //Read Data from the TargetPosition script and send data to server every frame
 
         //Experiment1
-        //send data to the server
+        //convert target values to string and to the server
         SentSocket(TargetPosition.target1.ToString() + TargetPosition.target2.ToString() + TargetPosition.target3.ToString() + TargetPosition.target4.ToString() + TargetPosition.target5.ToString());
 
     }
