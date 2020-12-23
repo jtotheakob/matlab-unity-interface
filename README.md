@@ -5,6 +5,5 @@ all experiment versions and files
 * (knee-sim-unity)-folder includes unity project with the knee simulation scene (trackers/bone-models)
 * (knee-sim-matlab)-folder includes matlab and simulink files
 
-**cross platform hololens-matlab communication: (not-working!)**
-* (hololens-net-unity)-folder includes unity project with hololens script for building tcpip client
-* (hololens-net-matlab)-folder includes matlab tcpip server file
+**cross platform unity-matlab communication for the acceptance testing:**
+* includes unity project with hololens script for building tcpip client and matlab tcpip server file
